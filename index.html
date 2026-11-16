@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0e17" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Conecta" />
+  <meta name="description" content="Calculadora de viajes rentables para conductores de Uber y DiDi" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="logo.png" />
+  <title>Conecta – Calculadora de Viajes</title>
+  <style>
+    :root {
+      --bg: #0a0e17;
+      --card: #121826;
+      --border: #1e293b;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --cyan: #00e5ff;
+      --cyan-dim: #00b8d4;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --input-bg: #0f172a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 16px 14px 40px;
+      line-height: 1.4;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .container {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    /* Header / Logo */
+    .header {
+      text-align: center;
+      margin-bottom: 16px;
+      margin-top: 6px;
+    }
+
+    .logo-icon {
+      width: 96px;
+      height: auto;
+      border-radius: 16px;
+      filter: drop-shadow(0 0 16px rgba(0, 229, 255, 0.5));
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      color: var(--text);
+    }
+
+    .traffic-light {
+      font-size: 1rem;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      margin-top: 12px;
+    }
+
+    label:first-of-type {
+      margin-top: 0;
+    }
+
+    /* Input groups with +/- */
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .input-row input {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .btn-adj {
+      flex-shrink: 0;
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--input-bg);
+      color: var(--cyan);
+      font-size: 1.35rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+      user-select: none;
+    }
+
+    .btn-adj:active {
+      background: rgba(0, 229, 255, 0.15);
+      border-color: var(--cyan);
+    }
+
+    .quick-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .quick-btns button {
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .quick-btns button:active {
+      background: rgba(0, 229, 255, 0.12);
+      border-color: var(--cyan-dim);
+      color: var(--cyan);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 11px 12px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.15);
+    }
+
+    input::placeholder {
+      color: #475569;
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s, box-shadow 0.2s;
+      margin-top: 14px;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--cyan-dim);
+      color: var(--cyan);
+    }
+
+    .btn-save {
+      background: linear-gradient(135deg, #0369a1, #0284c7);
+      color: white;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+    }
+
+    /* Result box */
+    .result {
+      display: none;
+      margin-top: 14px;
+      padding: 16px 14px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 500;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .result.visible {
+      display: block;
+    }
+
+    .result.green {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--green);
+      color: #34d399;
+    }
+
+    .result.amber {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid var(--amber);
+      color: #fbbf24;
+    }
+
+    .result.red {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--red);
+      color: #f87171;
+    }
+
+    .result .desglose {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-bottom: 8px;
+      line-height: 1.55;
+    }
+
+    .result .neta {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 6px 0 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .result .rentabilidad {
+      font-size: 0.95rem;
+      font-weight: 600;
+      opacity: 0.95;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 0.75rem;
+      color: #475569;
+    }
+
+    .offline-badge {
+      display: none;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--amber);
+      margin-bottom: 10px;
+    }
+
+    .offline-badge.visible {
+      display: block;
+    }
+
+    /* Campos dinámicos */
+    .campo-gasolina, .campo-electrico {
+      display: none;
+    }
+
+    .campo-gasolina.visible, .campo-electrico.visible {
+      display: block;
+    }
+
+    @media (max-width: 380px) {
+      .card { padding: 16px 14px; }
+      .result .neta { font-size: 1.25rem; }
+      .btn-adj { width: 38px; height: 38px; font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="offline-badge" id="offlineBadge">📡 Modo offline activo</div>
+
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">
+        <img src="logo.png" alt="Conecta" class="logo-icon" width="96" height="96" />
+      </div>
+    </div>
+
+    <div class="title">
+      <span class="traffic-light">🟢🟡🔴</span>
+      Calculadora de Viajes
+    </div>
+
+    <!-- Datos del Viaje -->
+    <div class="card">
+      <h2>Datos del Viaje</h2>
+
+      <label for="distancia">Distancia (km)</label>
+      <div class="input-row">
+        <button type="button" class="btn-adj" aria-label="Restar 1 km" onclick="ajustar('distancia', -1)">−</button>
+        <input type="number" id="distancia" placeholder="Ej. 12.5" min="0" step="0.1" inputmode="decimal" />
+        <button type="button" class="btn-adj" aria-label="Sumar 1 km" onclick="ajustar('distancia', 1)">+</button>
+      </div>
+      <div class="quick-btns">
+        <button type="button" onclick="ajustar('distancia', 5)">+5</button>
+        <button type="button" onclick="ajustar('distancia', 10)">+10</button>
+        <button type="button" onclick="ajustar('distancia', -5)">−5</button>
+      </div>
+
+      <label for="tiempo">Tiempo (minutos)</label>
+      <div class="input-row">
+        <button type="button" class="btn-adj" aria-label="Restar 1 min" onclick="ajustar('tiempo', -1)">−</button>
+        <input type="number" id="tiempo" placeholder="Ej. 35" min="0" step="1" inputmode="numeric" />
+        <button type="button" class="btn-adj" aria-label="Sumar 1 min" onclick="ajustar('tiempo', 1)">+</button>
+      </div>
+      <div class="quick-btns">
+        <button type="button" onclick="ajustar('tiempo', 5)">+5</button>
+        <button type="button" onclick="ajustar('tiempo', 10)">+10</button>
+        <button type="button" onclick="ajustar('tiempo', 15)">+15</button>
+      </div>
+
+      <label for="tarifa">Tarifa ganada ($)</label>
+      <div class="input-row">
+        <button type="button" class="btn-adj" aria-label="Restar $10" onclick="ajustar('tarifa', -10)">−</button>
+        <input type="number" id="tarifa" placeholder="Ej. 150" min="0" step="1" inputmode="decimal" />
+        <button type="button" class="btn-adj" aria-label="Sumar $10" onclick="ajustar('tarifa', 10)">+</button>
+      </div>
+      <div class="quick-btns">
+        <button type="button" onclick="ajustar('tarifa', 20)">+$20</button>
+        <button type="button" onclick="ajustar('tarifa', 50)">+$50</button>
+        <button type="button" onclick="ajustar('tarifa', -20)">−$20</button>
+      </div>
+
+      <button type="button" class="btn btn-secondary" onclick="limpiarCampos()">Limpiar campos</button>
+
+      <div id="resultado" class="result"></div>
+    </div>
+
+    <!-- Configuración de Vehículo -->
+    <div class="card">
+      <h2>Configuración de Vehículo</h2>
+
+      <label for="tipoVehiculo">Tipo de vehículo</label>
+      <select id="tipoVehiculo" onchange="cambiarTipoVehiculo(); programarCalculo()">
+        <option value="gasolina">Auto Gasolina</option>
+        <option value="electrico">Auto Eléctrico</option>
+      </select>
+
+      <!-- Campos Gasolina -->
+      <div class="campo-gasolina visible" id="camposGasolina">
+        <label for="rendimiento">Rendimiento (km/l)</label>
+        <input type="number" id="rendimiento" placeholder="Ej. 13" min="0" step="0.1" inputmode="decimal" oninput="programarCalculo()" />
+
+        <label for="precioGasolina">Precio gasolina ($/l)</label>
+        <input type="number" id="precioGasolina" placeholder="Ej. 24.50" min="0" step="0.01" inputmode="decimal" oninput="programarCalculo()" />
+      </div>
+
+      <!-- Campos Eléctrico -->
+      <div class="campo-electrico" id="camposElectrico">
+        <label for="rendimientoElec">Rendimiento (km/kWh)</label>
+        <input type="number" id="rendimientoElec" placeholder="Ej. 6.5" min="0" step="0.1" inputmode="decimal" oninput="programarCalculo()" />
+
+        <label for="precioElectricidad">Precio electricidad ($/kWh)</label>
+        <input type="number" id="precioElectricidad" placeholder="Ej. 2.80" min="0" step="0.01" inputmode="decimal" oninput="programarCalculo()" />
+      </div>
+
+      <label for="mantenimiento">Mantenimiento ($/km)</label>
+      <input type="number" id="mantenimiento" placeholder="Ej. 1.20" min="0" step="0.01" inputmode="decimal" oninput="programarCalculo()" />
+
+      <button type="button" class="btn btn-save" onclick="guardarConfig()">Guardar Configuración</button>
+    </div>
+
+    <div class="footer">Conecta · Calculadora de Viajes · PWA</div>
+  </div>
+
+  <script>
+    // Umbrales ocultos
+    const UMBRAL_KM = 8;
+    const UMBRAL_HORA = 180;
+
+    let debounceTimer = null;
+
+    // Cargar configuración + listeners
+    window.addEventListener('DOMContentLoaded', () => {
+      const config = JSON.parse(localStorage.getItem('conectaConfig') || '{}');
+
+      if (config.tipoVehiculo) document.getElementById('tipoVehiculo').value = config.tipoVehiculo;
+      if (config.rendimiento) document.getElementById('rendimiento').value = config.rendimiento;
+      if (config.precioGasolina) document.getElementById('precioGasolina').value = config.precioGasolina;
+      if (config.rendimientoElec) document.getElementById('rendimientoElec').value = config.rendimientoElec;
+      if (config.precioElectricidad) document.getElementById('precioElectricidad').value = config.precioElectricidad;
+      if (config.mantenimiento) document.getElementById('mantenimiento').value = config.mantenimiento;
+
+      cambiarTipoVehiculo();
+
+      // Listeners en tiempo real para datos del viaje
+      ['distancia', 'tiempo', 'tarifa'].forEach(id => {
+        document.getElementById(id).addEventListener('input', programarCalculo);
+      });
+
+      // Estado offline
+      actualizarEstadoOffline();
+      window.addEventListener('online', actualizarEstadoOffline);
+      window.addEventListener('offline', actualizarEstadoOffline);
+
+      // Registrar Service Worker (PWA)
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('SW registrado', reg.scope))
+          .catch(err => console.log('SW falló', err));
+      }
+    });
+
+    function actualizarEstadoOffline() {
+      const badge = document.getElementById('offlineBadge');
+      if (!navigator.onLine) {
+        badge.classList.add('visible');
+      } else {
+        badge.classList.remove('visible');
+      }
+    }
+
+    function programarCalculo() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(calcular, 320);
+    }
+
+    function ajustar(campo, delta) {
+      const el = document.getElementById(campo);
+      let val = parseFloat(el.value) || 0;
+      val = Math.max(0, val + delta);
+      // Redondeo amigable
+      if (campo === 'distancia') val = Math.round(val * 10) / 10;
+      else if (campo === 'tarifa') val = Math.round(val);
+      else val = Math.round(val);
+      el.value = val;
+      programarCalculo();
+    }
+
+    function cambiarTipoVehiculo() {
+      const tipo = document.getElementById('tipoVehiculo').value;
+      const gasolina = document.getElementById('camposGasolina');
+      const electrico = document.getElementById('camposElectrico');
+
+      if (tipo === 'gasolina') {
+        gasolina.classList.add('visible');
+        electrico.classList.remove('visible');
+      } else {
+        gasolina.classList.remove('visible');
+        electrico.classList.add('visible');
+      }
+    }
+
+    function guardarConfig() {
+      const config = {
+        tipoVehiculo: document.getElementById('tipoVehiculo').value,
+        rendimiento: parseFloat(document.getElementById('rendimiento').value) || 0,
+        precioGasolina: parseFloat(document.getElementById('precioGasolina').value) || 0,
+        rendimientoElec: parseFloat(document.getElementById('rendimientoElec').value) || 0,
+        precioElectricidad: parseFloat(document.getElementById('precioElectricidad').value) || 0,
+        mantenimiento: parseFloat(document.getElementById('mantenimiento').value) || 0
+      };
+      localStorage.setItem('conectaConfig', JSON.stringify(config));
+      alert('✅ Configuración guardada correctamente');
+      programarCalculo();
+    }
+
+    function limpiarCampos() {
+      document.getElementById('distancia').value = '';
+      document.getElementById('tiempo').value = '';
+      document.getElementById('tarifa').value = '';
+      const res = document.getElementById('resultado');
+      res.className = 'result';
+      res.innerHTML = '';
+    }
+
+    function calcular() {
+      const distancia = parseFloat(document.getElementById('distancia').value);
+      const tiempoMin = parseFloat(document.getElementById('tiempo').value);
+      const tarifa = parseFloat(document.getElementById('tarifa').value);
+      const tipo = document.getElementById('tipoVehiculo').value;
+      const mantenimiento = parseFloat(document.getElementById('mantenimiento').value) || 0;
+
+      const res = document.getElementById('resultado');
+
+      // Si faltan datos básicos, no mostrar error agresivo (solo ocultar)
+      if (!distancia || distancia <= 0 || !tiempoMin || tiempoMin <= 0 || isNaN(tarifa) || tarifa < 0) {
+        res.className = 'result';
+        res.innerHTML = '';
+        return;
+      }
+
+      let costoEnergia = 0;
+      let etiquetaEnergia = '';
+
+      if (tipo === 'gasolina') {
+        const rendimiento = parseFloat(document.getElementById('rendimiento').value) || 0;
+        const precioGasolina = parseFloat(document.getElementById('precioGasolina').value) || 0;
+
+        if (rendimiento <= 0) {
+          res.className = 'result amber visible';
+          res.innerHTML = 'Configura el rendimiento de gasolina en la sección de abajo.';
+          return;
+        }
+
+        costoEnergia = (distancia / rendimiento) * precioGasolina;
+        etiquetaEnergia = 'Gasolina';
+      } else {
+        const rendimientoElec = parseFloat(document.getElementById('rendimientoElec').value) || 0;
+        const precioElectricidad = parseFloat(document.getElementById('precioElectricidad').value) || 0;
+
+        if (rendimientoElec <= 0) {
+          res.className = 'result amber visible';
+          res.innerHTML = 'Configura el rendimiento eléctrico en la sección de abajo.';
+          return;
+        }
+
+        costoEnergia = (distancia / rendimientoElec) * precioElectricidad;
+        etiquetaEnergia = 'Electricidad';
+      }
+
+      const costoMantenimiento = distancia * mantenimiento;
+      const gananciaNeta = tarifa - costoEnergia - costoMantenimiento;
+
+      const porKm = gananciaNeta / distancia;
+      const horas = tiempoMin / 60;
+      const porHora = gananciaNeta / horas;
+
+      const energiaFmt = costoEnergia.toFixed(2);
+      const mantFmt = costoMantenimiento.toFixed(2);
+      const netaFmt = gananciaNeta.toFixed(2);
+      const kmFmt = porKm.toFixed(2);
+      const horaFmt = porHora.toFixed(2);
+
+      let clase = 'red';
+      if (porKm >= UMBRAL_KM && porHora >= UMBRAL_HORA) {
+        clase = 'green';
+      } else if (porKm >= UMBRAL_KM * 0.75 || porHora >= UMBRAL_HORA * 0.75) {
+        clase = 'amber';
+      }
+
+      res.className = `result ${clase} visible`;
+      res.innerHTML = `
+        <div class="desglose">
+          Costo ${etiquetaEnergia}: $${energiaFmt}<br>
+          Costo Mantenimiento: $${mantFmt}
+        </div>
+        <div class="neta">Ganancia neta: $${netaFmt}</div>
+        <div class="rentabilidad">${kmFmt}/km | ${horaFmt}/h</div>
+      `;
+    }
+  </script>
+</body>
+</html>
