@@ -1,7 +1,9 @@
+{
   "name": "Conecta – Calculadora de Viajes",
   "short_name": "Conecta",
-  "description": "Calculadora de viajes rentables para conductores de Uber y DiDi",
+  "description": "Calculadora de viajes rentables para conductores",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0a0e17",
   "theme_color": "#0a0e17",
@@ -11,13 +13,13 @@
       "src": "logo2.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "logo2.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
